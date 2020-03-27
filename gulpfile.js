@@ -2,14 +2,24 @@ let gulp = require('gulp'),
   sass = require('gulp-sass'),
   browserSync = require('browser-sync'),
   uglify = require('gulp-uglify'),
-  concat = require('gulp-concat');
-rename = require('gulp-rename')
+  concat = require('gulp-concat'),
+  rename = require('gulp-rename'),
+  del = require('del'),
+  autoprefixer = require('gulp-autoprefixer');
+
+
+gulp.task('clean', async function () {
+  del.sync('dist')
+});
 
 
 gulp.task('scss', function () {
   return gulp.src('app/scss/**/*.scss')
     .pipe(sass({
       outputStyle: 'compressed'
+    }))
+    .pipe(autoprefixer({
+      browsers: ['last 8 versions']
     }))
     .pipe(rename({
       suffix: ".min"
@@ -24,7 +34,6 @@ gulp.task('css', function () {
   return gulp.src([
       'node_modules/normalize.css/normalize.css',
       'node_modules/slick-carousel/slick/slick.css',
-      'node_modules/magnific-popup/dist/magnific-popup.css'
     ])
     .pipe(concat('_libs.scss'))
     .pipe(gulp.dest('app/scss'))
@@ -52,7 +61,6 @@ gulp.task('script', function () {
 gulp.task('js', function () {
   return gulp.src([
       'node_modules/slick-carousel/slick/slick.js',
-      'node_modules/magnific-popup/dist/jquery.magnific-popup.js'
     ])
     .pipe(concat('libs.min.js'))
     .pipe(uglify())
@@ -70,7 +78,7 @@ gulp.task('browser-sync', function () {
   });
 });
 
-gulp.task('build', async function () {
+gulp.task('export', function () {
   let buildHtml = gulp.src('app/*html')
     .pipe(gulp.dest('dist'));
 
@@ -92,5 +100,7 @@ gulp.task('watch', function () {
   gulp.watch('app/*.html', gulp.parallel('html'))
   gulp.watch('app/js/*.js', gulp.parallel('script'))
 });
+
+gulp.task('build', gulp.series('clean', 'export'));
 
 gulp.task('default', gulp.parallel('css', 'scss', 'js', 'browser-sync', 'watch'));
