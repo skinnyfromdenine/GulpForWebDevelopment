@@ -10,8 +10,7 @@ let gulp = require('gulp'),
 
 gulp.task('clean', async function () {
   del.sync('dist')
-});
-
+})
 
 gulp.task('scss', function () {
   return gulp.src('app/scss/**/*.scss')
@@ -19,10 +18,10 @@ gulp.task('scss', function () {
       outputStyle: 'compressed'
     }))
     .pipe(autoprefixer({
-      browsers: ['last 8 versions']
+      overrideBrowserslist: ['last 8 versions']
     }))
     .pipe(rename({
-      suffix: ".min"
+      suffix: '.min'
     }))
     .pipe(gulp.dest('app/css'))
     .pipe(browserSync.reload({
@@ -34,6 +33,7 @@ gulp.task('css', function () {
   return gulp.src([
       'node_modules/normalize.css/normalize.css',
       'node_modules/slick-carousel/slick/slick.css',
+      'node_modules/animate.css/animate.css',
     ])
     .pipe(concat('_libs.scss'))
     .pipe(gulp.dest('app/scss'))
@@ -41,8 +41,6 @@ gulp.task('css', function () {
       stream: true
     }))
 });
-
-
 
 gulp.task('html', function () {
   return gulp.src('app/*.html')
@@ -60,7 +58,7 @@ gulp.task('script', function () {
 
 gulp.task('js', function () {
   return gulp.src([
-      'node_modules/slick-carousel/slick/slick.js',
+      'node_modules/slick-carousel/slick/slick.js'
     ])
     .pipe(concat('libs.min.js'))
     .pipe(uglify())
@@ -79,7 +77,7 @@ gulp.task('browser-sync', function () {
 });
 
 gulp.task('export', function () {
-  let buildHtml = gulp.src('app/*html')
+  let buildHtml = gulp.src('app/**/*.html')
     .pipe(gulp.dest('dist'));
 
   let BuildCss = gulp.src('app/css/**/*.css')
@@ -91,8 +89,8 @@ gulp.task('export', function () {
   let BuildFonts = gulp.src('app/fonts/**/*.*')
     .pipe(gulp.dest('dist/fonts'));
 
-  let BuildImgs = gulp.src('app/img/**/*.*')
-    .pipe(gulp.dest('dist/img'));
+  let BuildImg = gulp.src('app/images/**/*.*')
+    .pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('watch', function () {
@@ -101,6 +99,6 @@ gulp.task('watch', function () {
   gulp.watch('app/js/*.js', gulp.parallel('script'))
 });
 
-gulp.task('build', gulp.series('clean', 'export'));
+gulp.task('build', gulp.series('clean', 'export'))
 
 gulp.task('default', gulp.parallel('css', 'scss', 'js', 'browser-sync', 'watch'));
